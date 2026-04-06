@@ -1,18 +1,20 @@
 configfile: "config.yaml"
 
+from pathlib import Path
 import os
 import pandas as pd
 
 PROJECT = config["project_root"]
+PACKAGE_ROOT = Path(workflow.basedir).resolve().parent
+SCRIPTS = PACKAGE_ROOT / "scripts"
+
 SAMPLES_TSV = config["samples_tsv"]
 COMPARISON_TSV = config["comparison_tsv"]
 DOWNLOAD_JSON = config["download_json"]
 
-BOWTIE2_INDEX = config["bowtie2_index"]
 HERV_GTF = config["herv_gtf"]
 L1_GTF = config["l1_gtf"]
 
-THREADS = config["threads"]
 MIN_COUNT = config["min_count"]
 ALPHA = config["alpha"]
 LOG2FC = config["log2fc_threshold"]
@@ -49,20 +51,21 @@ rule download_fastq:
         expand(os.path.join(PROJECT, "results/fastq/{sample}_2.fastq.gz"), sample=SAMPLES)
     shell:
         """
-        python {PROJECT}/scripts/downloader.py {input}
+        python {SCRIPTS}/downloader.py {input}
         """
 
 rule align_and_telescope:
     input:
-        expand(os.path.join(PROJECT, "results/telescope_herv/{sample}/telescope-telescope_report.tsv"), sample=SAMPLES),
-        expand(os.path.join(PROJECT, "results/telescope_l1/{sample}/telescope-telescope_report.tsv"), sample=SAMPLES)
+        expand(os.path.join(PROJECT, "results/fastq/{sample}_1.fastq.gz"), sample=SAMPLES),
+        expand(os.path.join(PROJECT, "results/fastq/{sample}_2.fastq.gz"), sample=SAMPLES),
+        SAMPLES_TSV
     output:
         expand(os.path.join(PROJECT, "results/bam/{sample}.sorted.bam"), sample=SAMPLES),
-        expand(os.path.join(PROJECT, "results/telescope_herv/{sample}/telescope_report.tsv"), sample=SAMPLES),
-        expand(os.path.join(PROJECT, "results/telescope_l1/{sample}/telescope_report.tsv"), sample=SAMPLES)
+        expand(os.path.join(PROJECT, "results/telescope_herv/{sample}/telescope-telescope_report.tsv"), sample=SAMPLES),
+        expand(os.path.join(PROJECT, "results/telescope_l1/{sample}/telescope-telescope_report.tsv"), sample=SAMPLES)
     shell:
         """
-        python {PROJECT}/scripts/run_alignment_and_telescope.py {PROJECT}
+        python {SCRIPTS}/run_alignment_and_telescope.py {PROJECT}
         """
 
 rule merge_herv:
@@ -72,7 +75,7 @@ rule merge_herv:
         os.path.join(PROJECT, "results/merged/herv_counts_merged.tsv")
     shell:
         """
-        python {PROJECT}/scripts/merge_telescope_counts.py \
+        python {SCRIPTS}/merge_telescope_counts.py \
           {PROJECT}/results/telescope_herv \
           {output}
         """
@@ -84,7 +87,7 @@ rule merge_l1:
         os.path.join(PROJECT, "results/merged/l1_counts_merged.tsv")
     shell:
         """
-        python {PROJECT}/scripts/merge_telescope_counts.py \
+        python {SCRIPTS}/merge_telescope_counts.py \
           {PROJECT}/results/telescope_l1 \
           {output}
         """
@@ -96,7 +99,7 @@ rule build_herv_metadata:
         os.path.join(PROJECT, "results/metadata/herv_metadata.tsv")
     shell:
         """
-        python {PROJECT}/scripts/build_locus_metadata.py \
+        python {SCRIPTS}/build_locus_metadata.py \
           {input} \
           {output}
         """
@@ -108,7 +111,7 @@ rule build_l1_metadata:
         os.path.join(PROJECT, "results/metadata/l1_metadata.tsv")
     shell:
         """
-        python {PROJECT}/scripts/build_locus_metadata.py \
+        python {SCRIPTS}/build_locus_metadata.py \
           {input} \
           {output}
         """
@@ -122,7 +125,7 @@ rule filter_herv:
         os.path.join(PROJECT, "results/deseq_herv/herv_counts_filtered.tsv")
     shell:
         """
-        Rscript {PROJECT}/scripts/filter_counts.R \
+        Rscript {SCRIPTS}/filter_counts.R \
           {input.counts} \
           {input.samples} \
           {input.comparison} \
@@ -139,7 +142,7 @@ rule filter_l1:
         os.path.join(PROJECT, "results/deseq_l1/l1_counts_filtered.tsv")
     shell:
         """
-        Rscript {PROJECT}/scripts/filter_counts.R \
+        Rscript {SCRIPTS}/filter_counts.R \
           {input.counts} \
           {input.samples} \
           {input.comparison} \
@@ -157,7 +160,7 @@ rule deseq_herv:
         png=os.path.join(PROJECT, "results/deseq_herv/herv_volcano.png")
     shell:
         """
-        Rscript {PROJECT}/scripts/run_deseq2_generic.R \
+        Rscript {SCRIPTS}/run_deseq2_generic.R \
           {input.counts} \
           {input.samples} \
           {input.comparison} \
@@ -177,7 +180,7 @@ rule deseq_l1:
         png=os.path.join(PROJECT, "results/deseq_l1/l1_volcano.png")
     shell:
         """
-        Rscript {PROJECT}/scripts/run_deseq2_generic.R \
+        Rscript {SCRIPTS}/run_deseq2_generic.R \
           {input.counts} \
           {input.samples} \
           {input.comparison} \
@@ -195,7 +198,7 @@ rule top_hits_herv:
         down=os.path.join(PROJECT, "results/deseq_herv/top10_down_herv.csv")
     shell:
         """
-        Rscript {PROJECT}/scripts/extract_top_hits.R \
+        Rscript {SCRIPTS}/extract_top_hits.R \
           {input} \
           {ALPHA} \
           {LOG2FC} \
@@ -211,7 +214,7 @@ rule top_hits_l1:
         down=os.path.join(PROJECT, "results/deseq_l1/top10_down_l1.csv")
     shell:
         """
-        Rscript {PROJECT}/scripts/extract_top_hits.R \
+        Rscript {SCRIPTS}/extract_top_hits.R \
           {input} \
           {ALPHA} \
           {LOG2FC} \
@@ -227,7 +230,7 @@ rule family_enrichment_herv:
         os.path.join(PROJECT, "results/deseq_herv/herv_family_enrichment.csv")
     shell:
         """
-        Rscript {PROJECT}/scripts/family_enrichment.R \
+        Rscript {SCRIPTS}/family_enrichment.R \
           {input.de} \
           {input.meta} \
           {output} \
@@ -243,7 +246,7 @@ rule family_enrichment_l1:
         os.path.join(PROJECT, "results/deseq_l1/l1_family_enrichment.csv")
     shell:
         """
-        Rscript {PROJECT}/scripts/family_enrichment.R \
+        Rscript {SCRIPTS}/family_enrichment.R \
           {input.de} \
           {input.meta} \
           {output} \
@@ -259,7 +262,7 @@ rule chrom_distribution_herv:
         os.path.join(PROJECT, "results/deseq_herv/herv_chromosomal_distribution.csv")
     shell:
         """
-        Rscript {PROJECT}/scripts/chromosomal_distribution.R \
+        Rscript {SCRIPTS}/chromosomal_distribution.R \
           {input.de} \
           {input.meta} \
           {output} \
@@ -275,7 +278,7 @@ rule chrom_distribution_l1:
         os.path.join(PROJECT, "results/deseq_l1/l1_chromosomal_distribution.csv")
     shell:
         """
-        Rscript {PROJECT}/scripts/chromosomal_distribution.R \
+        Rscript {SCRIPTS}/chromosomal_distribution.R \
           {input.de} \
           {input.meta} \
           {output} \

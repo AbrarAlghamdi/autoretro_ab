@@ -4,7 +4,7 @@ samples_tsv: /DataDrive/10TB/lolo/autoretro_ab/my_project/config/samples.tsv
 comparison_tsv: /DataDrive/10TB/lolo/autoretro_ab/my_project/config/comparison.tsv
 download_json: /DataDrive/10TB/lolo/autoretro_ab/my_project/config/download.json
 
-bowtie2_index: /path/to/hg38_bt2/hg38
+bowtie2_index: /DataDrive/10TB/lolo/retroflow/reference/hg38_bt2/hg38
 herv_gtf: /DataDrive/10TB/lolo/autoretro_ab/annotations/HERV_rmsk.hg38.v2.gtf
 l1_gtf: /DataDrive/10TB/lolo/autoretro_ab/annotations/transcripts_with_coords.gtf
 

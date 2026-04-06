@@ -18,26 +18,15 @@ def run_cmd(cmd, cwd=None):
 
 
 def parse_sample_args(sample_args):
-    """
-    Parse values like:
-    SRR1553606:control
-    SRR1553607:treated
-    """
     samples = []
     for item in sample_args:
         if ":" not in item:
-            raise ValueError(
-                f"Invalid sample format: {item}. Use SRR_ID:condition"
-            )
+            raise ValueError(f"Invalid sample format: {item}. Use SRR_ID:condition")
         srr_id, condition = item.split(":", 1)
         srr_id = srr_id.strip()
         condition = condition.strip()
-
         if not srr_id or not condition:
-            raise ValueError(
-                f"Invalid sample format: {item}. Use SRR_ID:condition"
-            )
-
+            raise ValueError(f"Invalid sample format: {item}. Use SRR_ID:condition")
         samples.append((srr_id, condition))
     return samples
 
@@ -88,8 +77,6 @@ def init_project(project_dir: str, samples=None):
     (project / "logs").mkdir(parents=True, exist_ok=True)
     (project / "reference").mkdir(parents=True, exist_ok=True)
 
-    shutil.copy2(WORKFLOW_DIR / "Snakefile", project / "Snakefile")
-
     config_text = f"""project_root: {project}
 
 samples_tsv: {project}/config/samples.tsv
@@ -138,9 +125,11 @@ def run_workflow(project_dir: str, cores: int):
     if not shutil.which("snakemake"):
         raise RuntimeError("snakemake not found in PATH")
 
+    snakefile = WORKFLOW_DIR / "Snakefile"
+
     cmd = [
         "snakemake",
-        "--snakefile", str(project / "Snakefile"),
+        "--snakefile", str(snakefile),
         "--directory", str(project),
         "--configfile", str(project / "config.yaml"),
         "--cores", str(cores),
