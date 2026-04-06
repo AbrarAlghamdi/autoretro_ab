@@ -21,7 +21,11 @@ It supports:
 
 ## Installation
 
+##  installation
+
 ```bash
 git clone https://github.com/AbrarAlghamdi/autoretro_ab.git
 cd autoretro_ab
-python -m pip install -e .
+conda env create -f environment.yml
+conda activate autoretro_ab_env
+pip install -e .
