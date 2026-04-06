@@ -23,7 +23,7 @@ LOG2FC = config["log2fc_threshold"]
 
 samples_df = pd.read_csv(SAMPLES_TSV, sep="\t")
 SAMPLES = samples_df["sample_id"].tolist()
-
+SRR_IDS = config["srr_ids"]
 
 rule all:
     input:
@@ -80,7 +80,7 @@ rule build_bowtie2_index:
 
 rule download_fastq:
     input:
-        DOWNLOAD_JSON
+        SRR_IDS
     output:
         expand(os.path.join(PROJECT, "results/fastq/{sample}_1.fastq.gz"), sample=SAMPLES),
         expand(os.path.join(PROJECT, "results/fastq/{sample}_2.fastq.gz"), sample=SAMPLES)
