@@ -64,6 +64,7 @@ def write_comparison_tsv(path: Path, samples):
 
 def init_project(project_dir: str, samples=None):
     project = Path(project_dir).resolve()
+    config_dir = project / "config"
 
     (project / "config").mkdir(parents=True, exist_ok=True)
     (project / "results" / "fastq").mkdir(parents=True, exist_ok=True)
@@ -77,15 +78,56 @@ def init_project(project_dir: str, samples=None):
     (project / "logs").mkdir(parents=True, exist_ok=True)
     (project / "reference").mkdir(parents=True, exist_ok=True)
 
+    # write SRR IDs file
+    srr_file = config_dir / "srr_ids.txt"
+
     config_text = f"""project_root: {project}
 
 samples_tsv: {project}/config/samples.tsv
 comparison_tsv: {project}/config/comparison.tsv
-download_json: {project}/config/download.json
+srr_ids: {project}/config/srr_ids.txt
 
-bowtie2_index: /path/to/hg38_bt2/hg38
+reference_fasta: resources/genome/hg38.fa
+bowtie2_index: resources/index/hg38
 herv_gtf: {ANNOTATIONS_DIR}/HERV_rmsk.hg38.v2.gtf
 l1_gtf: {ANNOTATIONS_DIR}/transcripts_with_coords.gtf
+
+threads: 8
+min_count: 10
+alpha: 0.05
+log2fc_threshold: 1
+
+bowtie2_bin: bowtie2
+telescope_bin: telescope
+"""
+    (project / "config.yaml").write_text(config_text)
+
+    if samples:
+        write_samples_tsv(project / "config" / "samples.tsv", samples)
+        write_comparison_tsv(project / "config" / "comparison.tsv", samples)
+
+        with open(srr_file, "w") as f:
+            for srr_id, condition in samples:
+                f.write(f"{srr_id}\n")
+    else:
+        default_samples = [
+            ("SRR1", "control"),
+            ("SRR2", "treated"),
+        ]
+        write_samples_tsv(project / "config" / "samples.tsv", default_samples)
+        write_comparison_tsv(project / "config" / "comparison.tsv", default_samples)
+
+        with open(srr_file, "w") as f:
+            for srr_id, condition in default_samples:
+                f.write(f"{srr_id}\n")
+
+    print(f"Project initialized at: {project}")
+    if samples:
+        print("Samples and conditions added automatically.")
+        print("Now edit only:")
+        print(f"  {project}/config.yaml")
+    else:
+        print("Edit config.yaml and files in config/ before running.")
 
 threads: 8
 min_count: 10
