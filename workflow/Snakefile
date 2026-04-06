@@ -46,7 +46,19 @@ rule all:
         os.path.join(PROJECT, "results/deseq_herv/herv_chromosomal_distribution.csv"),
         os.path.join(PROJECT, "results/deseq_l1/l1_chromosomal_distribution.csv")
 
-
+rule download_fastq:
+    input:
+        DOWNLOAD_JSON
+    output:
+        expand(os.path.join(PROJECT, "results/fastq/{sample}_1.fastq.gz"), sample=SAMPLES),
+        expand(os.path.join(PROJECT, "results/fastq/{sample}_2.fastq.gz"), sample=SAMPLES)
+    shell:
+        f"""
+        python {SCRIPTS}/downloader.py \
+            -i {input} \
+            -d sra \
+            -o {PROJECT}/results/fastq
+        """
 rule download_reference:
     output:
         fasta=os.path.join(PROJECT, REFERENCE_FASTA)
