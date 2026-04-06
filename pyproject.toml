@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "autoretro_ab"
+version = "0.1.0"
+description = "Automated retrotransposon RNA-seq workflow for HERV and L1 using Bowtie2, Telescope, and DESeq2"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+  {name = "Abrar Alghamdi"}
+]
+license = {text = "MIT"}
+dependencies = []
+
+[project.scripts]
+autoretro_ab = "autoretro_ab.cli:main"
+
+[tool.setuptools]
+packages = ["autoretro_ab"]
+
+[tool.setuptools.package-data]
+autoretro_ab = []

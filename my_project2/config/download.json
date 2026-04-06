@@ -1,0 +1,8 @@
+{
+  "ids": [
+    "SRR1553606",
+    "SRR1553607"
+  ],
+  "output_dir": "results/fastq",
+  "max_concurrent": 2
+}

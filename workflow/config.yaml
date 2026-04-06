@@ -1,0 +1,17 @@
+project_root: /DataDrive/10TB/lolo/retroflow
+
+samples_tsv: /DataDrive/10TB/lolo/retroflow/config/samples.tsv
+comparison_tsv: /DataDrive/10TB/lolo/retroflow/config/comparison.tsv
+download_json: /DataDrive/10TB/lolo/retroflow/config/download.json
+
+bowtie2_index: /DataDrive/10TB/lolo/retroflow/reference/hg38_bt2/hg38
+herv_gtf: /DataDrive/10TB/lolo/retroflow/annotations/HERV_rmsk.hg38.v2.gtf
+l1_gtf: /DataDrive/10TB/lolo/retroflow/annotations/transcripts_with_coords.gtf
+
+threads: 8
+min_count: 10
+alpha: 0.05
+log2fc_threshold: 1
+
+bowtie2_bin: /home/aasa13/miniconda3/envs/telescope_env/bin/bowtie2
+telescope_bin: /home/aasa13/miniconda3/envs/telescope_env/bin/telescope
