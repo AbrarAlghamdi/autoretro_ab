@@ -86,9 +86,11 @@ rule download_fastq:
         expand(os.path.join(PROJECT, "results/fastq/{sample}_2.fastq.gz"), sample=SAMPLES)
     shell:
         """
-        python {SCRIPTS}/downloader.py {input}
+        python {SCRIPTS}/downloader.py \
+          -i {input} \
+          -d sra \
+          -o {PROJECT}/results/fastq
         """
-
 
 rule align_and_telescope:
     input:
