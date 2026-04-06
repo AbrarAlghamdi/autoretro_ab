@@ -2,11 +2,10 @@
 
 `autoretro_ab` is a sharable workflow for automated retrotransposon RNA-seq analysis.
 
+
 By:
 
-Abrar Alghamdi 
-
-
+Abrar Alghamdi
 It supports:
 
 - downloading SRR runs
@@ -22,9 +21,7 @@ It supports:
 
 ## Installation
 
-Clone the repository:
-
 ```bash
-git clone https://github.com/YOUR_USERNAME/autoretro_ab.git
+git clone https://github.com/AbrarAlghamdi/autoretro_ab.git
 cd autoretro_ab
-pip install -e .
+python -m pip install -e .
