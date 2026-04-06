@@ -2,8 +2,7 @@ project_root: /home/a1321/Desktop/lolo/autoretro_ab/my_project
 
 samples_tsv: /home/a1321/Desktop/lolo/autoretro_ab/my_project/config/samples.tsv
 comparison_tsv: /home/a1321/Desktop/lolo/autoretro_ab/my_project/config/comparison.tsv
-download_json: /home/a1321/Desktop/lolo/autoretro_ab/my_project/config/download.json
-
+download_json: /home/a1321/Desktop/lolo/autoretro_ab/my_project/config/srr_ids.txt
 reference_fasta: resources/genome/hg38.fa
 bowtie2_index: resources/index/hg38
 
