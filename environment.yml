@@ -1,0 +1,16 @@
+name: autoretro_ab_env
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.10
+  - pandas
+  - snakemake
+  - bowtie2
+  - samtools
+  - sra-tools
+  - telescope
+  - r-base
+  - r-ggplot2
+  - bioconductor-deseq2
+  - pip

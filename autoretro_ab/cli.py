@@ -120,22 +120,18 @@ telescope_bin: telescope
 
 
 def run_workflow(project_dir: str, cores: int):
+    import sys
+
     project = Path(project_dir).resolve()
 
-    if not shutil.which("snakemake"):
-        raise RuntimeError("snakemake not found in PATH")
-
-    snakefile = WORKFLOW_DIR / "Snakefile"
-
     cmd = [
-        "snakemake",
-        "--snakefile", str(snakefile),
+        sys.executable, "-m", "snakemake",
+        "--snakefile", str(WORKFLOW_DIR / "Snakefile"),
         "--directory", str(project),
         "--configfile", str(project / "config.yaml"),
         "--cores", str(cores),
     ]
     run_cmd(cmd)
-
 
 def main():
     parser = argparse.ArgumentParser(prog="autoretro_ab")
